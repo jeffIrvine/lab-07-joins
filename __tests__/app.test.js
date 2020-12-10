@@ -70,4 +70,40 @@ describe('', () => {
     expect(res.body).toEqual(expect.arrayContaining(cars));
     expect(res.body).toHaveLength(cars.length);
   });
+
+  it('update', async() => {
+    const car = await Car.insert({
+      make: 'Lotus',
+      model: 'Evija',
+      color: 'white'
+    });
+
+    const res = await request(app)
+      .put(`/api/v1/cars/${car.id}`)
+      .send({
+        make: 'Lotus',
+        model: 'Evija',
+        color: 'black'
+      });
+
+    expect(res.body).toEqual({
+      id: car.id,
+      make: 'Lotus',
+      model: 'Evija',
+      color: 'black'
+    });
+  });
+
+  it('deletes a car with delete', async() => {
+    const car = await Car.insert({
+      make: 'Lotus',
+      model: 'Evija',
+      color: 'white'
+    });
+
+    const res = await request(app)
+      .delete(`/api/v1/cars/${car.id}`);
+
+    expect(res.body).toEqual(car);
+  });
 });
