@@ -3,6 +3,7 @@ const fs = require('fs');
 const app = require('../lib/app');
 const pool = require('../lib/utils/pool');
 const Car = require('../lib/models/Cars');
+const Driver = require('../lib/models/Drivers');
 
 describe('all routes for cars', () => {
 
@@ -38,10 +39,19 @@ describe('all routes for cars', () => {
       color: 'white'
     });
 
+    const drivers = await Promise.all([
+      { license: 'f101', carId: car.id },
+      { license: 'd123', carId: car.id },
+      { license: 'b201', carId: car.id }
+    ].map(driver => Driver.insert(driver)));
+
     const res = await request(app)
       .get(`/api/v1/cars/${car.id}`);
       
-    expect(res.body).toEqual(car);
+    expect(res.body).toEqual({
+      ...car,
+      drivers: expect.arrayContaining(drivers)
+    });
   });
 
   it('finds all cars with get', async() => {
