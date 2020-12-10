@@ -4,7 +4,7 @@ const app = require('../lib/app');
 const pool = require('../lib/utils/pool');
 const Car = require('../lib/models/Cars');
 
-describe('', () => {
+describe('all routes for cars', () => {
 
   beforeEach(() => {
     return pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
