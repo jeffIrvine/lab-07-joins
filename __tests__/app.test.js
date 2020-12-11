@@ -96,7 +96,6 @@ describe('all routes for cars and drivers', () => {
   //Cars get all
   it('finds all cars with get', async() => {
     const cars = await Promise.all([
-      
       {
         make: 'Lotus',
         model: 'Exige',
