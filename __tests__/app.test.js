@@ -148,12 +148,6 @@ describe('all routes for cars and drivers', () => {
 
   //Car update
   it('update a car with put', async() => {
-    // const car = await Car.insert({
-    //   make: 'Lotus',
-    //   model: 'Evija',
-    //   color: 'white'
-    // });
-
     const res = await request(app)
       .put(`/api/v1/cars/${car.id}`)
       .send({
@@ -172,21 +166,15 @@ describe('all routes for cars and drivers', () => {
 
   //Driver update
   it('updates a driver with put', async() => {
-    // const car = await Car.insert({
-    //   make: 'Lotus',
-    //   model: 'Evija',
-    //   color: 'white'
-    // });
-
     const res = await request(app)
-      .put(`/api/v1/drivers/${driver.id}`)
+      .put(`/api/v1/drivers/${drivers.id}`)
       .send({
         license: 'd101',
         carId: car.id
       });
 
     expect(res.body).toEqual({
-      id: driver.id,
+      id: drivers.id,
       license: 'd101',
       carId: car.id
     });
@@ -194,7 +182,7 @@ describe('all routes for cars and drivers', () => {
 
 
   //Car deletes
-  it('deletes a driver with delete', async() => {
+  it('deletes a car with delete', async() => {
     const car = await Car.insert({
       make: 'Lotus',
       model: 'Evija',
