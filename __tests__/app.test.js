@@ -8,7 +8,7 @@ const Driver = require('../lib/models/Drivers');
 describe('all routes for cars and drivers', () => {
 
   let car;
-  let driver;
+  let drivers;
   beforeEach(async() => {
     await pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
     car = await Car.insert({
@@ -16,7 +16,7 @@ describe('all routes for cars and drivers', () => {
       model: 'Exige',
       color: 'white'
     });
-    driver = await Driver.insert({
+    drivers = await Driver.insert({
       license: 'd101',
       carId: car.id
     });
@@ -63,11 +63,11 @@ describe('all routes for cars and drivers', () => {
 
   //Car findById
   it('finds a car referenced with driver by id with get',  async() => {
-    // const car = await Car.insert({
-    //   make: 'Lotus',
-    //   model: 'Exige',
-    //   color: 'white'
-    // });
+    const car = await Car.insert({
+      make: 'Lotus',
+      model: 'Exige',
+      color: 'white'
+    });
 
     const drivers = await Promise.all([
       { license: 'f101', carId: car.id },
@@ -85,27 +85,15 @@ describe('all routes for cars and drivers', () => {
   });
 
   //Driver findById
-  it('finds a driver referenced with car by id with get',  async() => {
-    // const driver = await Driver.insert({
-    //   license: 'd101',
-    //   carId: car.id
-    // });
-
-    const drivers = await Promise.all([
-      { license: 'f101', carId: car.id },
-      { license: 'd123', carId: car.id },
-      { license: 'b201', carId: car.id }
-    ].map(driver => Driver.insert(driver)));
-
+  it('finds a driver referenced by id with get',  async() => {
     const res = await request(app)
-      .get(`/api/v1/cars/${car.id}`);
+      .get(`/api/v1/drivers/${drivers.id}`);
       
-    expect(res.body).toEqual({
-      ...car,
-      drivers: expect.arrayContaining(drivers)
-    });
+    expect(res.body).toEqual(drivers);
   });
 
+
+  //Cars get all
   it('finds all cars with get', async() => {
     const cars = await Promise.all([
       
@@ -133,6 +121,32 @@ describe('all routes for cars and drivers', () => {
     expect(res.body).toHaveLength(cars.length + 1);
   });
 
+  //Drivers get all
+  it('finds all drivers with get', async() => {
+    const drivers = await Promise.all([
+      
+      {
+        license: 'd101',
+        carId: Driver.carId
+      },
+      {
+        license: 'f101',
+        carId: Driver.carId
+      },
+      {
+        license: 'a101',
+        carId: Driver.carId
+      }
+    ].map(driver => Driver.insert(driver)));
+
+    const res = await request(app)
+      .get('/api/v1/drivers');
+
+    expect(res.body).toEqual(expect.arrayContaining(drivers));
+    expect(res.body).toHaveLength(drivers.length + 1);
+  });
+
+  //Car update
   it('update a car with put', async() => {
     // const car = await Car.insert({
     //   make: 'Lotus',
@@ -156,7 +170,31 @@ describe('all routes for cars and drivers', () => {
     });
   });
 
-  it('deletes a car with delete', async() => {
+  //Driver update
+  it('updates a driver with put', async() => {
+    // const car = await Car.insert({
+    //   make: 'Lotus',
+    //   model: 'Evija',
+    //   color: 'white'
+    // });
+
+    const res = await request(app)
+      .put(`/api/v1/drivers/${driver.id}`)
+      .send({
+        license: 'd101',
+        carId: car.id
+      });
+
+    expect(res.body).toEqual({
+      id: driver.id,
+      license: 'd101',
+      carId: car.id
+    });
+  });
+
+
+  //Car deletes
+  it('deletes a driver with delete', async() => {
     const car = await Car.insert({
       make: 'Lotus',
       model: 'Evija',
@@ -167,5 +205,18 @@ describe('all routes for cars and drivers', () => {
       .delete(`/api/v1/cars/${car.id}`);
 
     expect(res.body).toEqual(car);
+  });
+
+  //Driver deletes
+  it('deletes a driver with delete', async() => {
+    const driver = await Driver.insert({
+      license: 'd101',
+      carId: car.id
+    });
+
+    const res = await request(app)
+      .delete(`/api/v1/drivers/${driver.id}`);
+
+    expect(res.body).toEqual(driver);
   });
 });
